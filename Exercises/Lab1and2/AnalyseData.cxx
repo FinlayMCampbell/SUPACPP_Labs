@@ -2,64 +2,89 @@
 #include <fstream>
 #include <string>
 #include <vector>
-
-void PrintLines(std::vector<std::vector<double>> xy, int N = 0){
-
-    if (N==0 || N>= xy.size()){
-        N = xy.size();
-    }
-
-    for (int i=0; i<N  ; i++ ){
-
-        std::cout << i+1 << ") x = " << xy[i][0] << ", y = " << xy[i][1] << std::endl;
-    }
-
-}
+#include <cmath>
+#include "CustomFunctions.h"
 
 
 int main(){
 
-
-//Create a class for input files 
-std::ifstream InputFile{"input2D_float.txt"};
-
-// set up a string to store each line and doubles to store numbers and one to store seperated data
-std::string InputLine;
-
-
-
-//Have an integer to skip the first line which is x,y
-int i{0};
-//integer to get position of comma in data 
-int CommaPos{};
-
-//vectors to hold the x values and the y values
-
-
+    
 std::vector<std::vector<double>> xy;
+xy = ImportDataToVec("input2D_float.txt");
 
 
 
-while (std::getline(InputFile, InputLine)){
-    //std::cout << InputLine << std::endl;
-    if (i>0){
-        CommaPos = InputLine.find(',');
-        xy.push_back({std::stod(InputLine.substr(0,CommaPos)),std::stod(InputLine.substr(CommaPos+1))});
-        }
-    i++;
+std::string UserInput;
+std::string Nlines;
+
+while (true){
+
+// prompt user for which function they need to use
+std::cout << "Which function do you want to use?" <<std::endl;
+std::cout << "A) print N lines" <<std::endl;
+std::cout << "B) calculate and print magnitudes" <<std::endl;
+std::cout << "C) Find and print the least squares fit formula" <<std::endl;
+std::cout << "D) Find and print x^y (with great power comes great responsibility)" <<std::endl;
+std::cout << "X) Exit Program" <<std::endl;
+
+std::cin >> UserInput;
+
+
+
+if (UserInput == "A"){
     
-    
 
-    }
+    std::cout << "How many lines do you want printed? Input an integer (0 for all lines):" <<std::endl;
+
+    std::cin >> Nlines;
+    std::cout << "Printing Data:" <<std::endl;
+
+    printVec(xy,stoi(Nlines));
+
+}
+else if (UserInput == "B"){
+
+    std::vector<double> Mags = CalcMagnitudes(xy);
+
+    std::cout << "How many lines do you want printed to terminal? Input an integer (0 for all lines):" <<std::endl;
+    std::cin >> Nlines;
+    std::cout << "Printing magnitudes:" <<std::endl;
+    printVec(Mags,stoi(Nlines));
+    printVec(Mags,"Magnitudes.txt");
+
+}
+else if (UserInput == "C"){
+    LeastSquaresFit();
+}
+else if (UserInput == "D"){
+    std::vector<double> Powers = PowerXYvec(xy);
+    std::cout << "How many lines do you want printed to terminal? Input an integer (0 for all lines):" <<std::endl;
+    std::cin >> Nlines;
+    std::cout << "Printing powers:" <<std::endl;
+    printVec(Powers,stoi(Nlines));
+    printVec(Powers,"Powers.txt",0);
 
 
+}
+else if (UserInput == "X"){
+    std::cout << "Exiting" <<std::endl;
+    break;
+}
 
+else {
+    std::cout << "Choose a valid input or exit program" <<std::endl;
+}
 
-PrintLines(xy,50);
-/*
-for (std::vector<double> xyElem: xy){
-        std::cout << "x = " << xyElem.at(0) << ", y = " << xyElem.at(1) << std::endl;
-    }*/
+std::cout << "Would you like to use another function? Press Y to choose another function or any other input to exit." <<std::endl;
+
+std::cin >> UserInput;
+if (!(UserInput == "Y")){
+    std::cout << "Exiting" <<std::endl;
+    break;
+}
+
+}
+
 return 0;  
 }
 
