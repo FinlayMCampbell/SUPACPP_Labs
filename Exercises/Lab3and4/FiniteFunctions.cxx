@@ -63,7 +63,25 @@ Integration by hand (output needed to normalise function when plotting)
 */ 
 double FiniteFunction::integrate(int Ndiv){ //private
   //ToDo write an integrator
-  return -99;  
+  // Do a Trapezodial rule for the integration with Ndiv Points
+  double IntegralVal = 0;
+  double PointWidth = (m_RMax-m_RMin)/(Ndiv-1);
+
+  // Trap rule: I = (x_N-x_1)/(N-1)*(f(x_1)/2 + f(x_2)+f(x_3)+...+f(x_(N-1))+f(x_N)/2)
+  //Calculate end points seperately to add to the integral scale by factor at the end
+  IntegralVal+= callFunction(m_RMin)/2;
+  IntegralVal+= callFunction(m_RMax)/2;
+
+  //((m_RMin-m_RMax)/(Ndiv-1))*
+
+  //Calculate all the middle points function values for trap rule
+  for (int i=1;i<Ndiv-1; i++){
+    IntegralVal+= callFunction(m_RMin+i*PointWidth);
+  }
+
+  //scale by the difference in x between adjacent points point
+  IntegralVal = IntegralVal*PointWidth;
+  return IntegralVal;  
 }
 double FiniteFunction::integral(int Ndiv) { //public
   if (Ndiv <= 0){
@@ -162,6 +180,10 @@ std::vector< std::pair<double,double> > FiniteFunction::makeHist(std::vector<dou
   for (double point : points){
     //Get bin index (starting from 0) the point falls into using point value, range, and Nbins
     int bindex = static_cast<int>(floor((point-m_RMin)/((m_RMax-m_RMin)/(double)Nbins)));
+    //Changes to fix crash
+    if (bindex<0 || bindex>=Nbins){
+      continue;
+    }
     bins[bindex]++; //weight of 1 for each data point
     norm++; //Total number of data points
   }

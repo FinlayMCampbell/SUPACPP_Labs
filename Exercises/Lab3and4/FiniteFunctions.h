@@ -24,6 +24,8 @@ public:
   virtual void printInfo(); //Dump parameter info about the current function (Overridable)
   virtual double callFunction(double x); //Call the function with value x (Overridable)
 
+  std::vector<double> Metropolis(int NSamples, double NormalStandDiv , int seed );
+
   //Protected members can be accessed by child classes but not users
 protected:
   double m_RMin;
